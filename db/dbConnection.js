@@ -1,6 +1,4 @@
 var {MongoClient} = require('mongodb');
-const { response } = require('../app');
-const { collection } = require('./models/user');
 
 const DATABASECONNECTION = "mongodb+srv://testdb:testdb@cluster0.4ucbz.mongodb.net/teach-n-learn-db?retryWrites=true&w=majority"
 const client = new MongoClient(DATABASECONNECTION);
@@ -14,11 +12,11 @@ async function insertClass(classObj) {
     //verifica se ja existe este professor dando esta matéria
     const teacherClassExists = await classTable.findOne({"teacher":classObj.teacher, "class":classObj.class});
     
-    if (teacherClassExists === undefined) {
+    if (!teacherClassExists) {
         
         await classTable.insertOne(classObj)
         .then((res) => {
-            console.log('inseri sucesso')
+            console.log('inseri classe com sucesso')
             //retorna o id da nova inserção
             console.log(res.insertedId.toHexString())
             insertionInfo = {
@@ -31,7 +29,7 @@ async function insertClass(classObj) {
         })
     } 
     else {
-        console.log('não inseri');
+        console.log('não inseri classe');
         insertionInfo = {
             status: 400,
             id: null
@@ -48,8 +46,72 @@ async function getCollection(colllectionName) {
     return await table.find().sort({teacher:1}).toArray()
 }
 
+async function loginUser(userInfo) {
+    const table = db.collection('users');
+    let loginInfo;
+    await client.connect();
+    
+    const userExists = await table.findOne({"username":userInfo.username});
+
+    if (!!userExists) {
+        const passwordMatches = await table.findOne({"username":userInfo.username, "password":userInfo.password})
+        if (!!passwordMatches) {
+            loginInfo = {
+                status:200,
+                description: `${userInfo.username} is logged in!`
+            }
+        }
+        else {
+            loginInfo = {
+                status:400,
+                description: "incorrect password"
+            }
+        }
+    }
+    else {
+        loginInfo = {
+            status: 400,
+            description: "username doesn't exists"
+        }
+    }
+
+    return loginInfo;
+}
+
+async function signUser(userInfo) {
+    const table = db.collection('users');
+    let signInfo;
+    await client.connect();
+
+    const userExists = await table.findOne({"username":userInfo.username});
+
+    if (!userExists) {
+        await table.insertOne(userInfo)
+        .then((res) => {
+            console.log('inseri usuario com sucesso')
+            //retorna o id da nova inserção
+            signInfo = {
+                status: 200,
+                userId: res.insertedId.toHexString()
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+    else {
+        console.log('não inseri usuario');
+        signInfo = {
+            status: 400
+        }
+    }
+
+    return signInfo;
+}
 
 module.exports = {
     insertClass,
     getCollection,
+    signUser,
+    loginUser
 }

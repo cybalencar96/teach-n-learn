@@ -30,7 +30,17 @@ const classTest = {
     createdAt: new Date().toLocaleString()
 }
 
+const loginUser = {
+    username: "admin123",
+    password: "admin123"
+}
 
+const signUser = {
+    name:"Administrador 123",
+    email: "admin123@admin.com",
+    username: "admin123",
+    password: "admin123"
+}
 
 
 const app = express();
@@ -45,12 +55,34 @@ app.post('/api/v0/classes', async (req,res) => {
     res.send(await mongo.insertClass(classTest))
 })
 
+app.post('/api/v0/login', async (req,res) => {
+    res.send(await mongo.loginUser(req));
+})
+app.post('/api/v0/signin', async (req,res) => {
+    res.send(await mongo.signUser(req));
+})
 //CODIGO PARA TESTAR O POST CLASS
 // try {
 //     mongo.insertClass(classTest).then(res => console.log(res));
 // } catch {
 //     console.log('erro');
 // }
+
+//CODIGO PARA TESTAR POST SIGNIN
+// try {
+//     mongo.signUser(signUser).then(res => console.log(res));
+// }
+// catch {
+//     console.log('deu erro');
+// }
+
+//CODIGO PARA TESTAR POST LOGIN
+try {
+    mongo.loginUser(loginUser).then(res => console.log(res));
+}
+catch {
+    console.log('deu erro');
+}
 
 //Server listener
 app.listen(port, () => {
