@@ -1,11 +1,12 @@
 var express = require('express');
+var {ObjectId} = require('mongodb');
 var mongo = require("./db/dbConnection");
 
 const classTest = {
     //id do usuario que está salvando a classe
-    userId: "612199022a2acd898fe3e256",
+    teacherId: new ObjectId("61228c873bd167b478aa5ab5"),
     teacher: "Sr Winglerson",
-    class: "portugues",
+    class: "Sexologia I",
     maxStudents: 20,
     students: [],
     price: 60,
@@ -38,10 +39,10 @@ const loginUser = {
 }
 
 const signUser = {
-    name:"usuario 1",
-    email: "usuario1@usuario1.com",
-    username: "usuario1",
-    password: "usuario1",
+    name:"usuario",
+    email: "usuario@usuario.com",
+    username: "usuario123",
+    password: "usuario123",
     phone: "+5521900001111"
 }
 
@@ -98,42 +99,49 @@ app.post('/api/v0/signin', async (req,res) => {
 })
 
 app.post('/api/v0/classes/:id/book', async (req,res) => {
-    const data = await mongo.bookClass(req.body.userId,req.params.id);
+    //necessário frontend passar o id do usuário logado
+    const data = await mongo.bookClass(req.body.userId,req.params.id,"book");
     res.send(data);
-})
+});
+app.post('/api/v0/classes/:id/unbook', async (req,res) => {
+    //necessário frontend passar o id do usuário logado
+    const data = await mongo.bookClass(req.body.userId,req.params.id,"unbook");
+    res.send(data);
+});
+
+
+//CODIGO PARA TESTAR POST SIGNIN
+//  try {
+//      mongo.signUser(signUser).then(res => console.log(res));
+//  }
+//  catch {
+//      console.log('deu erro');
+//  }
+
+
+//CODIGO PARA TESTAR POST LOGIN
+//try {
+//    mongo.loginUser(loginUser).then(res => console.log(res));
+//}
+//catch {
+//    console.log('deu erro');
+//}
+
 //CODIGO PARA TESTAR O POST CLASS
 // try {
+//     //o objeto da classe deve vir com o id do usuario que está logado (userId), o professor
 //     mongo.insertClass(classTest).then(res => console.log(res));
 // } catch {
 //     console.log('erro');
 // }
 
-//CODIGO PARA TESTAR POST SIGNIN
-// try {
-//     mongo.signUser(signUser).then(res => console.log(res));
-// }
-// catch {
-//     console.log('deu erro');
-// }
-
-//CODIGO PARA TESTAR POST LOGIN
-// try {
-//     mongo.loginUser(loginUser).then(res => console.log(res));
-// }
-// catch {
-//     console.log('deu erro');
-//}
-
-//CODIGO PARA TESTAR POST BOOK
-// try {
-//     mongo.bookClass("6121b4b4e900d91b3141e489","6121b44e5fdcc3ab7a17c62f").then(res => console.log(res));
-// }
-// catch {
-//     console.log('deu erro');
-// }
-
-
-
+//CODIGO PARA TESTAR POST BOOK e UNBOOK
+try {
+    mongo.bookClass("61228ca9e6a7c1679e978f82","61229125954ef38317a0d58c","book").then(res => console.log(res));
+}
+catch {
+    console.log('deu erro');
+}
 
 //Server listener
 app.listen(port, () => {
