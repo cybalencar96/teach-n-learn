@@ -50,6 +50,76 @@ async function insertClass(classObj) {
     return insertionInfo;
 }
 
+async function deleteClass(classId) {
+    await client.connect();
+    const classes = db.collection('classes');
+    const users = db.collection('users');
+    const classIdObj = new ObjectId(classId);
+    let result;
+    await classes.deleteOne({"_id":classIdObj}).then(async res => {
+        const updateUserDoc = {
+            $pull: {
+                learning: classIdObj
+            }
+        }
+        const updateTeacherDoc = {
+            $pull: {
+                teaching: classIdObj
+            }
+        }
+        await users.updateMany({teaching:classIdObj},updateTeacherDoc)
+        result = await users.updateMany({learning:classIdObj},updateUserDoc).then(res => {
+            return {
+                status: 200,
+                text:"OK",
+                description: "Classe excluída com sucesso!"
+            }
+        })
+
+    })
+    .catch(err => {
+        console.log(err);
+        result = {
+            status: 401,
+            text:"Unauthorized",
+            description: "Não foi possível excluir classe. Verifique id."
+        }
+    })
+
+    return result;
+}
+
+async function updateClass(classObj) {
+    await client.connect();
+    const classes = db.collection('classes');
+    let result;
+    await classes.updateOne({"_id":classObj._id},{$set: classObj}).then(res => {
+        if (res.matchedCount >= 1) {
+            if(res.modifiedCount >= 1) {
+                result = {
+                    status: 200,
+                    text: "OK",
+                    description: "Class updated successfully"
+                }
+            } else {
+                result = {
+                    status: 401,
+                    text: "Unauthorized",
+                    description: "Class found but not modified"
+                }
+            }
+        } else {
+            result = {
+                status: 401,
+                text: "Unauthorized",
+                description: "Class not found"
+            }
+        }
+    });
+
+    return result
+}
+
 async function getCollectionData(colllectionName,id,mode) {
     const table = db.collection(colllectionName);
     await client.connect();
@@ -264,5 +334,7 @@ module.exports = {
     getCollectionData,
     signUser,
     loginUser,
-    bookClass
+    bookClass,
+    deleteClass,
+    updateClass
 }

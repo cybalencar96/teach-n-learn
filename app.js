@@ -3,10 +3,11 @@ var {ObjectId} = require('mongodb');
 var mongo = require("./db/dbConnection");
 
 const classTest = {
+    _id: new ObjectId("61229125954ef38317a0d58c"),
     //id do usuario que está salvando a classe
     teacherId: new ObjectId("61228c873bd167b478aa5ab5"),
     teacher: "Sr Winglerson",
-    class: "Sexologia I",
+    class: "Sexologia III",
     maxStudents: 20,
     students: [],
     price: 60,
@@ -76,25 +77,33 @@ app.get('/api/v0/classes', async (req,res) => {
 // Buscando todas as classes de um professor pelo seu id na forma: /api/v0/classes/search?keyword=userId
 app.get('/api/v0/classes/search', async (req,res) => {
     const data = await mongo.getCollectionData('classes',req.query.keyword,"multiple")
-    .catch(err => console.log(err))
+    .catch(err => console.log(err));
     res.send(data); 
 });
 //Buscando apenas uma classe
 app.get('/api/v0/classes/:id', async (req,res) => {
-    const data = await mongo.getCollectionData('classes',req.params.id,"single") 
+    const data = await mongo.getCollectionData('classes',req.params.id,"single") ;
     res.send(data); 
 });
 app.post('/api/v0/classes', async (req,res) => {
-    const data = await mongo.insertClass(classTest)
-    res.send(data)
-})
-
-app.post('/api/v0/login', async (req,res) => {
-    const data = await mongo.loginUser(req.body)
+    const data = await mongo.insertClass(classTest);
     res.send(data);
-})
+});
+app.delete('/api/v0/classes/:id', async (req,res) => {
+    const data = await mongo.deleteClass(req.params.id);
+    res.send(data);
+});
+app.put('/api/v0/classes/:id', async (req,res) => {
+    //necessário enviar objeto da classe editada com seu id
+    const data = await mongo.updateClass(req.body);
+    res.send(data);
+});
+app.post('/api/v0/login', async (req,res) => {
+    const data = await mongo.loginUser(req.body);
+    res.send(data);
+});
 app.post('/api/v0/signin', async (req,res) => {
-    const data = await mongo.signUser(req.body)
+    const data = await mongo.signUser(req.body);
     res.send(data);
 })
 
@@ -136,8 +145,24 @@ app.post('/api/v0/classes/:id/unbook', async (req,res) => {
 // }
 
 //CODIGO PARA TESTAR POST BOOK e UNBOOK
+// try {
+//     mongo.bookClass("61228ca9e6a7c1679e978f82","61229125954ef38317a0d58c","book").then(res => console.log(res));
+// }
+// catch {
+//     console.log('deu erro');
+// }
+
+//CODIGO PARA TESTAR DELETE CLASS
+// try {
+//     mongo.deleteClass("612290ed56e4d266cdcae09a").then(res => console.log(res));
+// }
+// catch {
+//     console.log('deu erro');
+// }
+
+//CODIGO PARA TESTAR UPDATE CLASS
 try {
-    mongo.bookClass("61228ca9e6a7c1679e978f82","61229125954ef38317a0d58c","book").then(res => console.log(res));
+    mongo.updateClass(classTest).then(res => console.log(res));
 }
 catch {
     console.log('deu erro');
