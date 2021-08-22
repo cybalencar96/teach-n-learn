@@ -32,7 +32,9 @@ async function insertClass(classObj) {
     else {
         console.log('não inseri classe');
         insertionInfo = {
-            status: 400,
+            status: 401,
+            text:"Unauthorized",
+            description: "Class already exists",
             id: null
         }
     }
@@ -62,27 +64,37 @@ async function loginUser(userInfo) {
     let loginInfo;
     await client.connect();
     
-    const userExists = await table.findOne({"username":userInfo.username});
+    const userExists = await table.findOne({"credentials.private.username":userInfo.username});
 
     if (!!userExists) {
-        const passwordMatches = await table.findOne({"username":userInfo.username, "password":userInfo.password})
-        if (!!passwordMatches) {
+        const user = await table.findOne({"credentials.private.username":userInfo.username, "credentials.private.password":userInfo.password})
+        if (!!user) {
             loginInfo = {
                 status:200,
-                description: `${userInfo.username} is logged in!`
+                description: `${userInfo.username} is logged in!`,
+                userData: {
+                    id: user._id.toHexString(),
+                    basicInfo: user.credentials.public,
+                    teaching: user.teaching,
+                    learning: user.learning
+                }
             }
         }
         else {
             loginInfo = {
-                status:400,
-                description: "incorrect password"
+                status:401,
+                text:"Unauthorized",
+                description: "incorrect password",
+                userData: null
             }
         }
     }
     else {
         loginInfo = {
-            status: 400,
-            description: "username doesn't exists"
+            status: 401,
+            text:"Unauthorized",
+            description: "username doesn't exists",
+            userData: null
         }
     }
 
@@ -94,15 +106,32 @@ async function signUser(userInfo) {
     let signInfo;
     await client.connect();
 
-    const userExists = await table.findOne({"username":userInfo.username});
+    const userExists = await table.findOne({"credentials.private.username":userInfo.username});
 
     if (!userExists) {
-        await table.insertOne(userInfo)
+        const newUser = {
+            credentials: {
+                public: {
+                    name: userInfo.name,
+                    email: userInfo.email,
+                    phone: userInfo.phone
+                },
+                private: {
+                    username: userInfo.username,
+                    password: userInfo.password,
+                }
+            },
+            teaching: [],
+            learning: [],        
+        }
+        await table.insertOne(newUser)
         .then((res) => {
             console.log('inseri usuario com sucesso')
             //retorna o id da nova inserção
             signInfo = {
                 status: 200,
+                text:"OK",
+                description:"User sign in successful",
                 userId: res.insertedId.toHexString()
             }
         })
@@ -113,16 +142,71 @@ async function signUser(userInfo) {
     else {
         console.log('não inseri usuario');
         signInfo = {
-            status: 400
+            status: 401,
+            text:"Unauthorized",
+            description:"Username is already being used",
+            userId: null
         }
     }
 
     return signInfo;
 }
 
+async function bookClass(userId,classId) {
+    const users = db.collection('users');
+    const classes = db.collection('classes');
+    await client.connect();
+
+    const userIdObj = new ObjectId(userId);
+    const classIdObj = new ObjectId(classId);
+
+    const user = await users.findOne({"_id":userIdObj})
+    const classs = await classes.findOne({"_id":classIdObj});
+    
+    const alreadyBooked = classs.students.find(student => student.email === user.credentials.public.email);
+    if (!!alreadyBooked) {
+        return {
+            status: 401,
+            text: "Unauthorized",
+            description:"Student is already in this class"
+        }
+    }
+    if (!!user && !!classs){
+        user.learning.push(classs);
+        classs.students.push(user.credentials.public);
+        const updateUserDoc = {
+            $set: {
+                learning: user.learning
+            }
+        }
+        const updateClassDoc = {
+            $set: {
+                students: classs.students
+            }
+        }
+
+        await classes.updateOne({"_id":classIdObj},updateClassDoc).catch(err => console.log(err));
+        await users.updateOne({"_id":userIdObj},updateUserDoc).catch(err => console.log(err));
+
+        return {
+            status: 200,
+            description: "booking successfull"
+        }
+    }
+    else {
+        return {
+            status: 400,
+            description: "booking failed, user or class not valid anymore. Reload page."
+        }
+    }
+
+
+}
+
 module.exports = {
     insertClass,
     getCollectionData,
     signUser,
-    loginUser
+    loginUser,
+    bookClass
 }
