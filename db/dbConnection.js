@@ -1,4 +1,4 @@
-var {MongoClient} = require('mongodb');
+var {MongoClient, ObjectId} = require('mongodb');
 
 const DATABASECONNECTION = "mongodb+srv://testdb:testdb@cluster0.4ucbz.mongodb.net/teach-n-learn-db?retryWrites=true&w=majority"
 const client = new MongoClient(DATABASECONNECTION);
@@ -10,7 +10,8 @@ async function insertClass(classObj) {
     await client.connect();
 
     //verifica se ja existe este professor dando esta matéria
-    const teacherClassExists = await classTable.findOne({"teacher":classObj.teacher, "class":classObj.class});
+    let objId = new ObjectId(classObj.userId)
+    const teacherClassExists = await classTable.findOne({"userId":objId,"teacher":classObj.teacher, "class":classObj.class});
     
     if (!teacherClassExists) {
         
@@ -39,11 +40,21 @@ async function insertClass(classObj) {
     return insertionInfo;
 }
 
-async function getCollection(colllectionName) {
+async function getCollectionData(colllectionName,id,mode) {
     const table = db.collection(colllectionName);
     await client.connect();
+    //get all classes
+    if (!id) { return await table.find().sort({teacher:1}).toArray() }
+    //get one class
+    if (!!id && mode === "single") { 
+        let objId = new ObjectId(id);
+        return await table.findOne({"_id": objId})
+    }
+    //get all classes from given teacher
+    if (!!id && mode === "multiple") { 
+        return await table.find({"userId":id}).sort({teacher:1}).toArray() 
+    }
 
-    return await table.find().sort({teacher:1}).toArray()
 }
 
 async function loginUser(userInfo) {
@@ -111,7 +122,7 @@ async function signUser(userInfo) {
 
 module.exports = {
     insertClass,
-    getCollection,
+    getCollectionData,
     signUser,
     loginUser
 }
