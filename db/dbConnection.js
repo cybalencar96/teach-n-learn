@@ -9,13 +9,12 @@ async function insertClass(classObj) {
     const users = db.collection('users');
     let insertionInfo;
     await client.connect();
-
     //verifica se ja existe este professor dando esta matéria
     const teacherIdObj = new ObjectId(classObj.teacherId);
-    const teacherClassExists = await classes.findOne({"teacherId":teacherIdObj,"teacher":classObj.teacher, "class":classObj.class});
-    
+    const teacherClassExists = await classes.findOne({"class":classObj.class,"teacher":classObj.teacher,"teacherId":teacherIdObj});
+
     if (!teacherClassExists) {
-        
+        classObj["createdAt"] = new Date().toLocaleString();
         await classes.insertOne(classObj)
         .then(async (res) => {
             const updateUserDoc = {
@@ -38,7 +37,6 @@ async function insertClass(classObj) {
         })
     } 
     else {
-        console.log('não inseri classe');
         insertionInfo = {
             status: 401,
             text:"Unauthorized",
@@ -92,6 +90,7 @@ async function deleteClass(classId) {
 async function updateClass(classObj) {
     await client.connect();
     const classes = db.collection('classes');
+    classObj._id = new ObjectId(classObj._id);
     let result;
     await classes.updateOne({"_id":classObj._id},{$set: classObj}).then(res => {
         if (res.matchedCount >= 1) {
