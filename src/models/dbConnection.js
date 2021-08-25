@@ -150,19 +150,29 @@ async function updateClass(classObj) {
 async function getCollectionData(colllectionName,id,mode) {
     const table = db.collection(colllectionName);
     await client.connect();
-    //get all classes
-    if (!id) { return await table.find().sort({teacher:1}).toArray() }
-    //get one class
+    let result;
+    //get one class by id
     if (!!id && mode === "single") { 
         const classObjId = new ObjectId(id);
-        return await table.findOne({"_id": classObjId})
+        result =  await table.findOne({"_id": classObjId})
     }
     //get all classes from given teacher
     if (!!id && mode === "multiple") { 
-        const teacherObjId = new ObjectId(id)
-        return await table.find({"userId":teacherObjId}).sort({teacher:1}).toArray() 
+        const teacherObjId = new ObjectId(id);
+        result = await table.find({"teacherId":teacherObjId}).sort({class:1}).toArray(); 
     }
+    //get all classes
+    if (!id) { result = await table.find().sort({class:1}).toArray() }
 
+    if (!result) {
+        return {
+            status:401,
+            text: "Unauthorized",
+            description: "Data not found"
+        }
+    } else {
+        return result;
+    }
 }
 
 async function loginUser(userInfo) {

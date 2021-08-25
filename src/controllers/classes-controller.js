@@ -6,7 +6,7 @@ exports.getClasses = async (req,res) => {
 };
 
 exports.getClassByTeacher = async (req,res) => {
-    const data = await mongo.getCollectionData('classes',req.query.keyword,"multiple")
+    const data = await mongo.getCollectionData('classes',req.query.teacher,"multiple")
     .catch(err => console.log(err));
     res.send(data); 
 };

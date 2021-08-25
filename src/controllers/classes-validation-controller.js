@@ -51,9 +51,8 @@ exports.getClassById = (req,res,next) => {
 }
 
 exports.getClassByTeacher = (req,res,next) => {
-    const id = req.query.keyword;
-
-    if (id.length !== 24 || !isHexa(id) ) {
+    const id = req.query.teacher;
+    if (!id || id.length !== 24 || !isHexa(id) ) {
         res.send(error);
         return;
     }
