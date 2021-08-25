@@ -1,6 +1,6 @@
 
 exports.insertClass = (req,res,next) => {
-    const data = req.body
+    const data = req.body.body
     if (!data.teacherId || !data.class || !data.maxStudents || !data.price || !data.dateClass) {
         res.send(error);
         return;
@@ -72,9 +72,9 @@ exports.deleteClass = (req,res,next) => {
 
 exports.booking = (req,res,next) => {
     const classId = req.params.id;
-    const userId = req.body.userId;
+    const userId = req.body.body.userId;
 
-    if (Object.keys(req.body).length !== 1 || !userId) {
+    if (Object.keys(req.body.body).length !== 1 || !userId) {
         res.send(error);
         return;
     }

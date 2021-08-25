@@ -17,7 +17,7 @@ exports.getClassById = async (req,res) => {
 };
 
 exports.insertClass = async (req,res) => {
-    const data = await mongo.insertClass(req.body);
+    const data = await mongo.insertClass(req.body.body);
     res.send(data);
 };
 
@@ -28,18 +28,18 @@ exports.deleteClass = async (req,res) => {
 
 exports.updateClass = async (req,res) => {
     //necessário enviar objeto da classe editada com seu id
-    const data = await mongo.updateClass(req.body);
+    const data = await mongo.updateClass(req.body.body);
     res.send(data);
 };
 
 exports.bookClass = async (req,res) => {
     //necessário frontend passar o id do usuário logado
-    const data = await mongo.bookClass(req.body.userId,req.params.id,"book");
+    const data = await mongo.bookClass(req.body.body.userId,req.params.id,"book");
     res.send(data);
 };
 
 exports.unbookClass = async (req,res) => {
     //necessário frontend passar o id do usuário logado
-    const data = await mongo.bookClass(req.body.userId,req.params.id,"unbook");
+    const data = await mongo.bookClass(req.body.body.userId,req.params.id,"unbook");
     res.send(data);
 };

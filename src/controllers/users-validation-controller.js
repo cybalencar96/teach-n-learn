@@ -1,6 +1,7 @@
 
 exports.signIn = (req,res,next) => {
-    if(!!req.body.name && !!req.body.email && !!req.body.profileImg && !!req.body.username && !!req.body.password && !!req.body.phone) {
+    const data = req.body.body
+    if(!!data.name && !!data.email && !!data.profileImg && !!data.username && !!data.password && !!data.phone) {
         next();
     } else {
         res.send(error);
@@ -8,7 +9,8 @@ exports.signIn = (req,res,next) => {
 };
 
 exports.logIn = (req,res,next) => {
-    if(!!req.body.username && !!req.body.password) {
+    const data = req.body.body
+    if(!!data.username && !!data.password) {
         next();
     } else {
         res.send(error);
