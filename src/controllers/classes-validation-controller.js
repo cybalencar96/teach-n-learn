@@ -62,11 +62,12 @@ exports.getClassByTeacher = (req,res,next) => {
 
 exports.deleteClass = (req,res,next) => {
     const id = req.params.id
-    if (id !== 24 || !isHexa(id) ) {
+
+    
+    if (id.length !== 24 || !isHexa(id)) {
         res.send(error);
         return;
     }
-
     next();
 }
 
@@ -88,7 +89,13 @@ exports.booking = (req,res,next) => {
 }
 
 function isHexa(str) {
-    return /[0-9A-Fa-f]/.test(str)
+    const hexa = "0123456789abcdef";
+    for (let i = 0; i < str.length; i++) {
+        if (!hexa.includes(str[i])) {
+            return false;
+        }
+    }
+    return true;
 }
 
 const error = {
