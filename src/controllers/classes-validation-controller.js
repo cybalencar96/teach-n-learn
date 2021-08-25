@@ -5,7 +5,7 @@ exports.insertClass = (req,res,next) => {
         res.send(error);
         return;
     }
-    //verifica número de atributos
+    //verifica número de atributos do objeto
     if ((!data._id && Object.keys(data).length !== 5) || (!!data._id && Object.keys(data).length !== 7)) {
         console.log("oi")
         console.log( Object.keys(data).length);

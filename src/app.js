@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const { raw } = require('body-parser');
 
 const app = express();
-const port = 5050;
+const port = process.env.PORT || 5050;
 const apiVersion = "v0";
 
 //Body parsers

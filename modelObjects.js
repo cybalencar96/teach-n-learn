@@ -1,29 +1,51 @@
 
 //Objeto usado para criar uma nova classe com base no id do usuario que criou a classe
-//Ao ser criado, essa classe será retornada ao front com o id dela.
+//Ao ser criado, essa classe será retornada ao front com o id dela e outras infos.
 const classTest = {
     "teacherId": "61228c873bd167b478aa5ab5",
-    "teacher": "Sr Winglerson",
     "class": "Sexologia II",
     "maxStudents": 20,
-    "students": [],
     "price": 60,
     "dateClass": [
         {
-            "weekday": "mon",
+            "weekday": "monday",
             "hasClass": true,
             "startHour": "15:00",
             "endHour":"17:00"
         },
         {
-            "weekday": "mon",
+            "weekday": "tuesday",
             "hasClass": false,
             "startHour": "XX:XX",
             "endHour":"XX:XX"
         },
         {
+            "weekday": "wednesday",
             "hasClass": true,
-            "weekday": "mon",
+            "startHour": "08:00",
+            "endHour":"10:00"
+        },
+        {
+            "weekday": "thursday",
+            "hasClass": true,
+            "startHour": "08:00",
+            "endHour":"10:00"
+        },
+        {
+            "weekday": "friday",
+            "hasClass": true,
+            "startHour": "08:00",
+            "endHour":"10:00"
+        },
+        {
+            "weekday": "saturday",
+            "hasClass": true,
+            "startHour": "08:00",
+            "endHour":"10:00"
+        },
+        {
+            "weekday": "sunday",
+            "hasClass": true,
             "startHour": "08:00",
             "endHour":"10:00"
         }
