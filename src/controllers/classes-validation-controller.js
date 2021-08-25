@@ -5,10 +5,14 @@ exports.insertClass = (req,res,next) => {
         res.send(error);
         return;
     }
+    if (data.teacherId.length !== 24 || !isHexa(data.teacherId) ) {
+        res.send(error);
+        return;
+    }
+
+    
     //verifica número de atributos do objeto
     if ((!data._id && Object.keys(data).length !== 5) || (!!data._id && Object.keys(data).length !== 7)) {
-        console.log("oi")
-        console.log( Object.keys(data).length);
         res.send(error);
         return;
     }
@@ -16,111 +20,80 @@ exports.insertClass = (req,res,next) => {
         res.send(error);
         return;
     }
-    // const result = data.dateClass.forEach((day,index) => {
-    //     const days = ["monday","tuesday", "wednesday", "thursday", "friday","saturday","sunday"];
-    //     if (day.weekday !== days[index]) {
-    //         console.log(day.weekday !== days[index])
 
-    //         return false
-    //     }
-    //     // if (typeof(day.hasClass) !== "boolean") {
-    //     //     return false;
-    //     // }
-    //     return true
-    // });
+    let result = true;
+    data.dateClass.forEach((day,index) => {
+        const days = ["monday","tuesday", "wednesday", "thursday", "friday","saturday","sunday"];
+        if (day.weekday !== days[index]) {
+            result = false;
+        }
+        if (typeof(day.hasClass) !== "boolean") {
+            result = false;
+        }
+    });
     
-    // if (!result) { 
-    //     console.log("ooi")
-
-    //     res.send(error);
-    //     return;
-    // }
+    if (!result) { 
+        res.send(error);
+        return;
+    }
 
     next();
 }
 
+exports.getClassById = (req,res,next) => {
+    const id = req.params.id
+    if (id.length !== 24 || !isHexa(id) ) {
+        res.send(error);
+        return;
+    }
 
-//ALTEREI A ESTRUTURA DESSE OBJETO, REVER DB CONNECTION
-const classTest = {
-    "teacherId": "61228c873bd167b478aa5ab5",
-    "class": "Sexologia II",
-    "maxStudents": 20,
-    "price": 60,
-    "dateClass": [
-        {
-            "weekday": "mon",
-            "hasClass": true,
-            "startHour": "15:00",
-            "endHour":"17:00"
-        },
-        {
-            "weekday": "mon",
-            "hasClass": false,
-            "startHour": "XX:XX",
-            "endHour":"XX:XX"
-        },
-        {
-            "hasClass": true,
-            "weekday": "mon",
-            "startHour": "08:00",
-            "endHour":"10:00"
-        }
-    ]
+    next();
 }
-const classTest2 = {
-    "teacherId": "61228c873bd167b478aa5ab5",
-    "class": "Sexologia II",
-    "maxStudents": 20,
-    "students": [],
-    "price": 60,
-    "dateClass": [
-        {
-            "weekday": "monday",
-            "hasClass": true,
-            "startHour": "15:00",
-            "endHour":"17:00"
-        },
-        {
-            "weekday": "tuesday",
-            "hasClass": false,
-            "startHour": "XX:XX",
-            "endHour":"XX:XX"
-        },
-        {
-            "weekday": "wednesday",
-            "hasClass": true,
-            "startHour": "08:00",
-            "endHour":"10:00"
-        },
-        {
-            "weekday": "thursday",
-            "hasClass": true,
-            "startHour": "08:00",
-            "endHour":"10:00"
-        },
-        {
-            "weekday": "friday",
-            "hasClass": true,
-            "startHour": "08:00",
-            "endHour":"10:00"
-        },
-        {
-            "weekday": "saturday",
-            "hasClass": true,
-            "startHour": "08:00",
-            "endHour":"10:00"
-        },
-        {
-            "weekday": "sunday",
-            "hasClass": true,
-            "startHour": "08:00",
-            "endHour":"10:00"
-        }
-    ]
+
+exports.getClassByTeacher = (req,res,next) => {
+    const id = req.query.keyword;
+
+    if (id.length !== 24 || !isHexa(id) ) {
+        res.send(error);
+        return;
+    }
+    
+    next();
+}
+
+exports.deleteClass = (req,res,next) => {
+    const id = req.params.id
+    if (id !== 24 || !isHexa(id) ) {
+        res.send(error);
+        return;
+    }
+
+    next();
+}
+
+exports.booking = (req,res,next) => {
+    const classId = req.params.id;
+    const userId = req.body.userId;
+
+    if (Object.keys(req.body).length !== 1 || !userId) {
+        res.send(error);
+        return;
+    }
+
+    if (classId.length !== 24 || userId.length !== 24 || !isHexa(classId) || !isHexa(userId) ) {
+        res.send(error);
+        return;
+    }
+
+    next();
+}
+
+function isHexa(str) {
+    return /[0-9A-Fa-f]/.test(str)
 }
 
 const error = {
     status: 400,
     text: "Bad Request",
-    description: "Object sent does not match with requirements"
+    description: "Object sent does not match with requirements or id pattern"
 }

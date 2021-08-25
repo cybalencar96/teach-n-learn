@@ -5,18 +5,12 @@ const validationController = require('../../../controllers/classes-validation-co
 
 
 router.get('/', actionController.getClasses);
-router.get('/hello', (req,res ) => res.send('hello'));
-
-
-router.get('/search', actionController.getClassByTeacher);
-router.get('/:id', actionController.getClassById);
-
-router.delete('/:id', actionController.deleteClass);
-
+router.get('/search', validationController.getClassByTeacher, actionController.getClassByTeacher);
+router.get('/:id', validationController.getClassById, actionController.getClassById);
+router.delete('/:id',validationController.deleteClass, actionController.deleteClass);
 router.put('/:id', validationController.insertClass, actionController.updateClass);
-
-router.post('', validationController.insertClass, actionController.insertClass);
-router.post('/:id/book', actionController.bookClass);
-router.post('/:id/unbook', actionController.unbookClass);
+router.post('/', validationController.insertClass, actionController.insertClass);
+router.post('/:id/book', validationController.booking, actionController.bookClass);
+router.post('/:id/unbook', validationController.booking, actionController.unbookClass);
 
 module.exports = router;

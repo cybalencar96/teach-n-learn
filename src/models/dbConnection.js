@@ -65,6 +65,16 @@ async function deleteClass(classId) {
     const users = db.collection('users');
     const classIdObj = new ObjectId(classId);
     let result;
+
+    const classExists = await classes.findOne({"_id":classIdObj});
+    if (!classExists) {
+        return {
+            status: 401,
+            text: "Unauthorized",
+            description: "Class doens't exists or was already deleted"
+        }
+    }
+
     await classes.deleteOne({"_id":classIdObj}).then(async res => {
         const updateUserDoc = {
             $pull: {
@@ -81,19 +91,12 @@ async function deleteClass(classId) {
             return {
                 status: 200,
                 text:"OK",
-                description: "Classe excluída com sucesso!"
+                description: "Class excludex successfully!"
             }
         })
 
     })
-    .catch(err => {
-        console.log(err);
-        result = {
-            status: 401,
-            text:"Unauthorized",
-            description: "Não foi possível excluir classe. Verifique id."
-        }
-    })
+
 
     return result;
 }
@@ -229,7 +232,6 @@ async function signUser(userInfo) {
         }
         await table.insertOne(newUser)
         .then((res) => {
-            console.log('inseri usuario com sucesso')
             //retorna o id da nova inserção
             signInfo = {
                 status: 200,
