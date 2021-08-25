@@ -5,7 +5,6 @@ const validationController = require('../../../controllers/classes-validation-co
 
 
 router.get('/', actionController.getClasses);
-router.get('/hello', (req,res) => res.send('Hello'));
 
 router.get('/search', actionController.getClassByTeacher);
 router.get('/:id', actionController.getClassById);
