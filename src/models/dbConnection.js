@@ -1,8 +1,23 @@
 var {MongoClient, ObjectId} = require('mongodb');
+var mongoose = require("mongoose");
 
 const DATABASECONNECTION = process.env.MONGODB_URI || "mongodb+srv://testdb:testdb@cluster0.4ucbz.mongodb.net/teach-n-learn-db?retryWrites=true&w=majority"
 const client = new MongoClient(DATABASECONNECTION);
 const db = client.db('teach-n-learn-db');
+
+// async function connectDB() {
+//     await mongoose.connect(DATABASECONNECTION, {useUnifiedTopology:true, useNewUrlParser:true,useCreateIndex:true})
+//     .then(function(x) {
+//        console.log( `Connected to Mongo! Database name: "${x.connections[0].name}"`);
+//     })
+//     .catch (function(err){
+//         console.error('Error connecting to mongo', err);
+//         mongoose.connection.close();
+//     }); 
+//     return mongoose;
+// };
+
+
 
 async function insertClass(classObj) {
     const classes = db.collection('classes');
@@ -366,6 +381,7 @@ async function bookClass(userId,classId,operation) {
 }
 
 module.exports = {
+    //connectDB,
     insertClass,
     getCollectionData,
     signUser,
