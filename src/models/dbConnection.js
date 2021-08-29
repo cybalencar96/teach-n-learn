@@ -31,8 +31,8 @@ async function insertClass(classObj) {
     const teacherExists = await users.findOne({"_id":classObj.teacherId});
     if (!teacherExists) {
         return {
-            status: 401,
-            text: "Unauthorized",
+            status: 204,
+            text: "No Content",
             description: "Teacher from this class not found"
         }
     }
@@ -129,8 +129,8 @@ async function updateClass(classObj) {
     const teacherExists = await users.findOne({"_id":teacherObjId});
     if (!teacherExists) {
         return {
-            status: 401,
-            text: "Unauthorized",
+            status: 204,
+            text: "No Content",
             description: "Teacher from this class not found"
         }
     }
@@ -152,8 +152,8 @@ async function updateClass(classObj) {
             }
         } else {
             result = {
-                status: 401,
-                text: "Unauthorized",
+                status: 204,
+                text: "No Content",
                 description: "Class not found"
             }
         }
@@ -181,8 +181,8 @@ async function getCollectionData(colllectionName,id,mode) {
 
     if (!result) {
         return {
-            status:401,
-            text: "Unauthorized",
+            status:204,
+            text: "No Content",
             description: "Data not found"
         }
     } else {
@@ -190,6 +190,21 @@ async function getCollectionData(colllectionName,id,mode) {
     }
 }
 
+async function getClassByName(className) {
+    const classes = db.collection('classes');
+    await client.connect();
+
+    const matches = await classes.find({class: {$regex: className, $options: "$i"}}).sort({class:1}).toArray();
+    if (!!matches) {
+        return matches;
+    } else {
+        return {
+            status:204,
+            text: "No Content",
+            description: "Data not found"
+        }
+    }
+}
 async function loginUser(userInfo) {
     const table = db.collection('users');
     let loginInfo;
@@ -245,7 +260,8 @@ async function signUser(userInfo) {
                 public: {
                     name: userInfo.name,
                     email: userInfo.email,
-                    phone: userInfo.phone
+                    phone: userInfo.phone,
+                    profileImg: userInfo.profileImg
                 },
                 private: {
                     username: userInfo.username,
@@ -270,7 +286,6 @@ async function signUser(userInfo) {
         })
     }
     else {
-        console.log('não inseri usuario');
         signInfo = {
             status: 401,
             text:"Unauthorized",
@@ -388,5 +403,6 @@ module.exports = {
     loginUser,
     bookClass,
     deleteClass,
-    updateClass
+    updateClass,
+    getClassByName
 }

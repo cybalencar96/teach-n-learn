@@ -5,8 +5,9 @@ const validationController = require('../../../controllers/classes-validation-co
 
 //get all classes
 router.get('/', actionController.getClasses);
-//get class by teacher
-router.get('/search', validationController.getClassByTeacher, actionController.getClassByTeacher);
+//get class by teacher or name
+router.get('/search', validationController.getClassByQuery, actionController.getClassByQuery);
+
 //get class by id
 router.get('/:id', validationController.getClassById, actionController.getClassById);
 //detele class

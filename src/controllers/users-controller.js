@@ -7,7 +7,6 @@ exports.signIn = async (req,res) => {
 };
 
 exports.logIn = async (req,res) => {
-    console.log(req.body.body)
     const data = await mongo.loginUser(req.body.body);
     res.send(data);
 };

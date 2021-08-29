@@ -50,14 +50,27 @@ exports.getClassById = (req,res,next) => {
     next();
 }
 
-exports.getClassByTeacher = (req,res,next) => {
-    const id = req.query.teacher;
-    if (!id || id.length !== 24 || !isHexa(id) ) {
-        res.send(error);
-        return;
+exports.getClassByQuery = (req,res,next) => {
+    if (!!req.query.teacher){
+        const id = req.query.teacher;
+        if (!id || id.length !== 24 || !isHexa(id) ) {
+            res.send(error);
+            return;
+        }
+        
+        next();
+    } else if (!!req.query.name) {
+        const name = req.query.name;
+        console.log(name);
+        if (!name) {
+            res.send(error);
+            return;
+        }
+        
+        next();
     }
+
     
-    next();
 }
 
 exports.deleteClass = (req,res,next) => {

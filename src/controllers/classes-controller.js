@@ -5,9 +5,17 @@ exports.getClasses = async (req,res) => {
     res.send(data); 
 };
 
-exports.getClassByTeacher = async (req,res) => {
-    const data = await mongo.getCollectionData('classes',req.query.teacher,"multiple")
-    .catch(err => console.log(err));
+exports.getClassByQuery = async (req,res) => {
+    let data;
+    if (!!req.query.teacher){
+        data = await mongo.getCollectionData('classes',req.query.teacher,"multiple")
+        .catch(err => console.log(err));
+    }
+    else if (!!req.query.name) {
+        data = await mongo.getClassByName(req.query.name)
+        .catch(err => console.log(err));
+    }
+    
     res.send(data); 
 };
 
