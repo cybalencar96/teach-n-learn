@@ -11,4 +11,13 @@ exports.logIn = async (req,res) => {
     res.send(data);
 };
 
+exports.updateUserInfo = async (req,res) => {
+    const data = await mongo.updateUserInfo(req.params.id,req.body.body,false)
+    res.send(data);
+}
+
+exports.updatePassword = async (req,res) => {
+    const data = await mongo.updateUserInfo(req.params.id,req.body.body,true)
+    res.send(data);
+}
 

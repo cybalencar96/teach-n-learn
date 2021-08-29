@@ -68,6 +68,21 @@ const signUser = {
     "phone": "+5521900001111"
 }
 
+const updateUserInfo = {
+    body: {
+        "name":"usuario",
+        "email": "usuario@usuario.com",
+        "profileImg": "https//www.qualquer-url-de-image.com/imagem.jpg",
+        "phone": "+5521900001111"   
+    }
+}
+
+const updatePassword = {
+    body: {
+        password: "123"
+    }
+}
+
 //objeto usado no back para inserir no banco
 const user = {
     "credentials": {
