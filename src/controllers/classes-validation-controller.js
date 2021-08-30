@@ -61,7 +61,6 @@ exports.getClassByQuery = (req,res,next) => {
         next();
     } else if (!!req.query.name) {
         const name = req.query.name;
-        console.log(name);
         if (!name) {
             res.send(error);
             return;

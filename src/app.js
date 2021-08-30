@@ -19,9 +19,6 @@ app.use(bodyParser.json());
 //Routes
 app.use(`/api/${apiVersion}`, require(`./routes/api/${apiVersion}/index.js`));
 
-//DB connect
-//mongo.connectDB();
-
 //Server listener
 app.listen(port, () => {
     console.log(`Server started at http://localhost:${port}`)
