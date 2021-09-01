@@ -4,10 +4,9 @@ const db = client.db('teach-n-learn-db');
 
 async function loginUser(userInfo) {
     const table = db.collection('users');
-    let loginInfo;
     await client.connect();
-    
     const userExists = await table.findOne({"credentials.private.username":userInfo.username});
+    let loginInfo;
 
     if (!!userExists) {
         const user = await table.findOne({"credentials.private.username":userInfo.username, "credentials.private.password":userInfo.password})
